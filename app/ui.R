@@ -52,12 +52,22 @@ lon_res <- abs(round((lon[1] - lon[2])/2, digits = 5))
 
 
 # sequencia de tempo para previsao
+dates_unf <- dates
 dates <- as.POSIXlt(strptime(as.character(dates), "d%Y.%m.%d.h%H"))
 # select times after present hour
 hour <- as.POSIXlt(round(Sys.time(), units="hours"))
 dates <- as.character(dates)
-dates <- as.POSIXct(dates[which(dates == as.character(hour)):length(dates)])
 
+wrf_cft <- subset(wrf_cft, which(dates == as.character(hour)):length(dates))
+wrf_prec <- subset(wrf_prec, which(dates == as.character(hour)):length(dates))
+wrf_rh <- subset(wrf_rh, which(dates == as.character(hour)):length(dates))
+wrf_sst <- subset(wrf_sst, which(dates == as.character(hour)):length(dates))
+wrf_swflx <- subset(wrf_swflx, which(dates == as.character(hour)):length(dates))
+wrf_temp <- subset(wrf_temp, which(dates == as.character(hour)):length(dates))
+wrf_wind <- subset(wrf_wind, which(dates == as.character(hour)):length(dates))
+wrf_wind_gust <- subset(wrf_wind_gust, which(dates == as.character(hour)):length(dates))
+
+dates <- as.POSIXct(dates[which(dates == as.character(hour)):length(dates)])
 
 
 seq_time <- seq(01, length(dates), by =1)
@@ -78,7 +88,7 @@ min_max_swflx <- seq(round(min(wrf_swflx@data@min), digits = -1), round(max(wrf_
 min_max_temp <- seq(round(min(wrf_temp@data@min), digits = -1), round(max(wrf_temp@data@max), digits = -1), .2)-272.15
 min_max_wind <- seq(round(min(wrf_wind@data@min), digits = -1), round(max(wrf_wind@data@max), digits = -1), .1)
 min_max_wind_gust <- seq(round(min(wrf_wind_gust@data@min), digits = -1), round(max(wrf_wind_gust@data@max), digits = -1), .1)
-min_max_cft <- seq(round(min(wrf_cft@data@min), digits = -1), round(max(wrf_cft@data@max), digits = -1), .1)
+min_max_cft <- seq(round(min(wrf_cft@data@min), digits = 0), round(max(wrf_cft@data@max), digits = 0), .1)
 
 
 # selecionar variaveis corretas
@@ -120,7 +130,7 @@ shinyUI(navbarPage(theme="http://bootswatch.com/spacelab/bootstrap.css", inverse
                                 
                                 absolutePanel(h2("Time sequence controler"),top=10, right=10, draggable = F,
                                               sliderInput("date", "Date: ", min=min(dates), max=max(dates), value=dates[1], step=(dates[2]-dates[1]), #sep="", format="## Hours", #timeFormat = "%B",
-                                                          animate = animationOptions(interval = 500, loop = F)) # , post=" Mês"  , playButton = "PLAY", pauseButton = "PAUSA"
+                                                          animate = animationOptions(interval = 700, loop = F)) # , post=" Mês"  , playButton = "PLAY", pauseButton = "PAUSA"
                                 ),
                                 
                                 #checkboxInput("legend", "Legenda adaptada para valores anuais (desabilitar para maior gama valores)", TRUE),
@@ -135,9 +145,9 @@ shinyUI(navbarPage(theme="http://bootswatch.com/spacelab/bootstrap.css", inverse
                             
                             absolutePanel(bottom = 0, right = 10, width = 700, height = "auto", draggable = F, fixed = TRUE,
                                           bsCollapse(id = "collapseExample", open = NULL,
-                                                     bsCollapsePanel("Notas:", 
-                                                                     "os steps de tempo que vemos sao de hora a hora, 
-                                                                     começando no inicio do dia presente",
+                                                     bsCollapsePanel("Notes:", 
+                                                                     "This forecast is based in meteogalicia WRF simulations with 36 Km resolution. 
+                                                                     ",
                                                                      style = "info", 
                                                                      actionButton("about", "Sobre", class="btn-block"))
                                           ), 
@@ -158,12 +168,12 @@ shinyUI(navbarPage(theme="http://bootswatch.com/spacelab/bootstrap.css", inverse
                             
                             
                             ),
-                   tabPanel("Relatório",
+                   tabPanel("Report",
                             uiOutput("page1")
                    ),
                    navbarMenu("Mais",
                               tabPanel("Sobre",
-                                       "about_tab e laladinha"
+                                       "About e laladinha"
                               )
                    )
                    )

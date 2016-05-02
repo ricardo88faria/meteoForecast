@@ -31,13 +31,13 @@ if (file.exists("tmp/date.Rdata") == TRUE) {
     
   } else if (today != Sys.Date()) {
     
-    source("../meteoForecast.R")
+    source("meteoForecast.R")
     
   }
   
 } else if (file.exists("tmp/date.Rdata") != TRUE) {
   
-  source("../meteoForecast.R")
+  source("meteoForecast.R")
   
 }
 
@@ -52,11 +52,23 @@ lon_res <- abs(round((lon[1] - lon[2])/2, digits = 5))
 
 
 # sequencia de tempo para previsao
+dates_unf <- dates
 dates <- as.POSIXlt(strptime(as.character(dates), "d%Y.%m.%d.h%H"))
 # select times after present hour
 hour <- as.POSIXlt(round(Sys.time(), units="hours"))
 dates <- as.character(dates)
-dates <- dates[which(dates == as.character(hour)):length(dates)]
+
+wrf_cft <- subset(wrf_cft, which(dates == as.character(hour)):length(dates))
+wrf_prec <- subset(wrf_prec, which(dates == as.character(hour)):length(dates))
+wrf_rh <- subset(wrf_rh, which(dates == as.character(hour)):length(dates))
+wrf_sst <- subset(wrf_sst, which(dates == as.character(hour)):length(dates))
+wrf_swflx <- subset(wrf_swflx, which(dates == as.character(hour)):length(dates))
+wrf_temp <- subset(wrf_temp, which(dates == as.character(hour)):length(dates))
+wrf_wind <- subset(wrf_wind, which(dates == as.character(hour)):length(dates))
+wrf_wind_gust <- subset(wrf_wind_gust, which(dates == as.character(hour)):length(dates))
+
+dates <- as.POSIXct(dates[which(dates == as.character(hour)):length(dates)])
+
 
 seq_time <- seq(01, length(dates), by =1)
 lon_view <- -16.7
@@ -76,12 +88,13 @@ min_max_swflx <- seq(round(min(wrf_swflx@data@min), digits = -1), round(max(wrf_
 min_max_temp <- seq(round(min(wrf_temp@data@min), digits = -1), round(max(wrf_temp@data@max), digits = -1), .2)-272.15
 min_max_wind <- seq(round(min(wrf_wind@data@min), digits = -1), round(max(wrf_wind@data@max), digits = -1), .1)
 min_max_wind_gust <- seq(round(min(wrf_wind_gust@data@min), digits = -1), round(max(wrf_wind_gust@data@max), digits = -1), .1)
-min_max_cft <- seq(round(min(wrf_cft@data@min), digits = 0), round(max(wrf_cft@data@max), digits = 0), .005)
+min_max_cft <- seq(round(min(wrf_cft@data@min), digits = 0), round(max(wrf_cft@data@max), digits = 0), .1)
 
 
 # selecionar variaveis corretas
 variavs <- variavs[-c(6:8)]
 variavs <- c(variavs, "wind")
+
 
 shinyServer(function(input, output, session) { # added ps for another raster, porto santo
   #acm_defaults <- function(map, x, y) addCircleMarkers(map, x, y, radius=6, color="black", fillColor="orange", fillOpacity=1, opacity=1, weight=2, stroke=TRUE, layerId="Selected")
@@ -134,21 +147,21 @@ shinyServer(function(input, output, session) { # added ps for another raster, po
   
   ras_pal <- reactive({
     if (variable() == "prec") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_prec, bins = c(-Inf, min_max_prec, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("lightsteelblue1", "yellowgreen", "orange", "tomato1", "violetred4"), min_max_prec, bins = c(-Inf, min_max_prec, Inf), na.color="transparent", alpha = F)
     } else if (variable() == "rh") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_rh, bins = c(-Inf, min_max_rh, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("burlywood4", "burlywood", "darkseagreen", "palegreen2", "steelblue1", "royalblue3"), min_max_rh, bins = c(-Inf, min_max_rh, Inf), na.color="transparent", alpha = F)
     } else if (variable() == "sst") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_sst, bins = c(-Inf, min_max_sst, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), min_max_sst, bins = c(-Inf, min_max_sst, Inf), na.color="transparent", alpha = F)
     } else if (variable() == "temp") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_temp, bins = c(-Inf, min_max_temp, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), min_max_temp, bins = c(-Inf, min_max_temp, Inf), na.color="transparent", alpha = F)
     } else if (variable() == "wind") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_wind, bins = c(-Inf, min_max_wind, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), min_max_wind, bins = c(-Inf, min_max_wind, Inf), na.color="transparent", alpha = F)
     } else if (variable() == "wind_gust") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_wind_gust, bins = c(-Inf, min_max_wind_gust, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), min_max_wind_gust, bins = c(-Inf, min_max_wind_gust, Inf), na.color="transparent", alpha = F)
     } else if (variable() == "swflx") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_swflx, bins = c(-Inf, min_max_swflx, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("lightcyan", "yellow2", "orange", "tomato1", "violetred4", "violetred", "purple"), min_max_swflx, bins = c(-Inf, min_max_swflx, Inf), na.color="transparent", alpha = F)
     } else if (variable() == "cft") {
-      colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), min_max_cft, bins = c(-Inf, min_max_cft, Inf), na.color="transparent", alpha = F)
+      colorBin(palette = c("lightskyblue1", "snow1", "snow2", "snow3", "lightsteelblue3"," snow4"), min_max_cft, bins = c(-Inf, min_max_cft, Inf), na.color="transparent", alpha = F)
     }
   })
   
@@ -174,24 +187,43 @@ shinyServer(function(input, output, session) { # added ps for another raster, po
   
   ras_pal_legend <- reactive({ 
     if (variable() == "prec") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("lightsteelblue1", "yellowgreen", "orange", "tomato1", "violetred4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     } else if (variable() == "rh") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("burlywood4", "burlywood", "darkseagreen", "palegreen2", "steelblue1", "royalblue3"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     } else if (variable() == "sst") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     } else if (variable() == "temp") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     } else if (variable() == "wind") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     } else if (variable() == "wind_gust") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     } else if (variable() == "swflx") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("lightcyan", "yellow2", "orange", "tomato1", "violetred4", "violetred", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     } else if (variable() == "cft") {
-      colorNumeric(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
+      colorNumeric(palette = c("lightskyblue1", "snow1", "snow2", "snow3", "lightsteelblue3"," snow4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     }
   }) 
   
+  ras_legend <- reactive({ 
+    if (variable() == "prec") {
+      "Precipitation [mm]"
+    } else if (variable() == "rh") {
+      "Relative Humidity [%]"
+    } else if (variable() == "sst") {
+      "Sea Surface Temp. [ºC]"
+    } else if (variable() == "temp") {
+      "Air Temperature at 2m [ºC]"
+    } else if (variable() == "wind") {
+      "Wind velocity at 10m [m/s]"
+    } else if (variable() == "wind_gust") {
+      "Wind gust [m/s]"
+    } else if (variable() == "swflx") {
+      "surface downwelling shortwave flux  [w/m^2]"
+    } else if (variable() == "cft") {
+      "cloud cover at low and mid levels [%]"
+    }
+  })
   
   
   #pal_anual <- reactive({ colorBin(palette = c("dodgerblue", "springgreen2", "yellow2", "orange", "tomato1", "violetred4", "purple"), domain = minmax_vals_anual(), bins = c(-Inf, minmax_vals_anual(), Inf), na.color="transparent", alpha = F) }) 
@@ -211,7 +243,7 @@ shinyServer(function(input, output, session) { # added ps for another raster, po
     proxy <- leafletProxy("Map")
     proxy %>% clearControls()
     if (input$wrf_var != "-"){
-      proxy %>% addLegend(position="bottomleft", pal=ras_pal_legend(), values=ras_vals_legend(), title= "legenda teste", opacity = input$var_opac, labFormat = labelFormat(big.mark = "")) #%>%   # values= seq(50, 220, 5)
+      proxy %>% addLegend(position="bottomleft", pal=ras_pal_legend(), values=ras_vals_legend(), title= ras_legend(), opacity = input$var_opac, labFormat = labelFormat(big.mark = "")) #%>%   # values= seq(50, 220, 5)
       #removeTiles(layerId="raster") %>% addRasterImage(ras(), opacity=input$prec_opac, project = F, layerId="raster")
     } else if (input$wrf_var == "-"){
       proxy %>% clearControls()

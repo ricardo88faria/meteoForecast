@@ -7,8 +7,8 @@ library(rworldmap)
 library(rworldxtra)
 library(ncdf4)
 #install.packages('unixtools',,'http://www.rforge.net/')
-if (!require("unixtools")) install.packages('unixtools','http://www.rforge.net/')
-library(unixtools)
+#if (!require("unixtools")) install.packages('unixtools','http://www.rforge.net/')
+#library(unixtools)
 
 
 #limpeza ambiente e objetos:
@@ -48,7 +48,7 @@ coordinates(st) <- cbind(c(-31.550296, -3.864749),
 proj4string(st) <- '+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0'
 
 ## set working directory
-set.tempdir(path = paste0(getwd(), "/tmp"))
+#set.tempdir(path = paste0(getwd(), "/tmp"))
 data_dir <- tempdir()
 remote = T
 
@@ -97,7 +97,6 @@ for (i in variavs) {
   
   #wrf_temporary <- projectRaster(wrf_temporary, crs="+proj=longlat +datum=WGS84")
   wrf_temporary <- projectRaster(wrf_temporary, crs="+init=epsg:4326")
-  wrf_temporary <- CRS("+init=epsg:4326")
   #pr2 <- projectRaster(from = wrf_temporary, crs=newproj, method="ngb")
   #ll = projectRaster(wrf_temporary,crs="+init=epsg:4326")
   
@@ -109,7 +108,9 @@ rm(wrf_temporary)
 
 wrf_wind <- ((wrf_u^2) + (wrf_v^2))^(1/2)
 
-dates <- wrf_u@data@names
+rm(wrf_u, wrf_v)
+
+dates <- wrf_temp@data@names
 lat <- seq(wrf_temp@extent@ymin, wrf_temp@extent@ymax, by = res(wrf_temp)[2])
 lon <- seq(wrf_temp@extent@xmin, wrf_temp@extent@xmax, by = res(wrf_temp)[1])
 
