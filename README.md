@@ -1,4 +1,4 @@
-# Stlantic Forecast
+# Atlantic Forecast
 
 
 
@@ -9,8 +9,10 @@ Work in progress!!!
 
 **Shiny app**
 
+https://rfaria.shinyapps.io/Atlantic_Forecast/
 
-
+[Atlantic Forecast Interactive Aplication][1]
+[1]: https://rfaria.shinyapps.io/Atlantic_Forecast/
 
 
 ## Usage:
