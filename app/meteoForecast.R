@@ -7,6 +7,7 @@ library(rworldmap)
 library(rworldxtra)
 library(ncdf4)
 #install.packages('unixtools',,'http://www.rforge.net/')
+if (!require("unixtools")) install.packages('unixtools','http://www.rforge.net/')
 library(unixtools)
 
 

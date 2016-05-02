@@ -13,7 +13,7 @@ library(rasterVis)
 
 levelplot(wrf_wind_gust, layers = 1:10)
 
-image(wrf_wind_gust, layers = 10)
+image(wrf_sst, layers = 10)
 plot(getMap(resolution = "high"), add = T)
 
 hovmoller(wrf_wind_gust)
