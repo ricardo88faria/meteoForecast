@@ -3,13 +3,15 @@
 #packages:
 library(meteoForecast)
 library(raster)
-library(rworldmap)
-library(rworldxtra)
+library(rgdal)
+#library(rworldmap)
+#library(rworldxtra)
 library(ncdf4)
 #install.packages('unixtools',,'http://www.rforge.net/')
 #if (!require("unixtools")) install.packages('unixtools','http://www.rforge.net/')
 #library(unixtools)
 
+#options(echo=FALSE)
 
 #limpeza ambiente e objetos:
 #rm(list=ls())
@@ -43,8 +45,8 @@ rast_limit <- mfExtent('meteogalicia', resolution = 36)
 st <- data.frame(name=c('SO','NE'))
 
 coordinates(st) <- cbind(c(-31.550296, -3.864749),
-                         c(27.332903, 43.644163)
-)
+                         c(27.332903, 43.644163))
+
 proj4string(st) <- '+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0'
 
 ## set working directory
@@ -78,17 +80,22 @@ variavs <- c("temp",
              #"topo"
 )
 pro_meteog_36 = "+proj=lcc +lat_1=43 +lat_2=43 +lat_0=24.2280006408691 +lon_0=-14.1000003814697 +x_0=2182629.35 +y_0=-269655.97 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=km +no_defs"
+
+#checkDays(start = today, end = today +1, service = "meteogalicia", vars = "temp")
+
 for (i in variavs) {
   
   # download netcdf to raster
   wrf_temporary <- getRaster(i, day = today, box = st, frames = 'complete', resolution = 36, service = "meteogalicia", remote = remote, dataDir = data_dir)
-  
+  cat("\n Downloaded: ", i)
   #wrf <- Sys.glob(paste0("tmp/", i, "*"))
   #wrf_temporary <-brick(wrf)
   
   # bilinear interpolation to bigger resolution
   rasterOptions(timer = T, progress = "text")
+  cat("\n raster options changed ")
   wrf_temporary <- disaggregate(wrf_temporary, fact=c(4, 4), method='bilinear')
+  cat("\n disaggregated: ", i)
   
   # project to longlat
   #use this until fixed, then delete
@@ -99,20 +106,29 @@ for (i in variavs) {
   wrf_temporary <- projectRaster(wrf_temporary, crs="+init=epsg:4326")
   #pr2 <- projectRaster(from = wrf_temporary, crs=newproj, method="ngb")
   #ll = projectRaster(wrf_temporary,crs="+init=epsg:4326")
+  cat("\n projection changed: ", i)
   
   assign(paste0("wrf_", i), wrf_temporary)
+  cat("\n Variable assigned : ", i)
+  
+  #system(paste0("mv ", data_dir, "/", i, "* ", getwd(), "/tmp"))
   
 }
 
 rm(wrf_temporary)
 
 wrf_wind <- ((wrf_u^2) + (wrf_v^2))^(1/2)
+wrf_temp <- wrf_temp - 272.15
+wrf_sst <- wrf_sst - 272.15
 
 rm(wrf_u, wrf_v)
 
 dates <- wrf_temp@data@names
-lat <- seq(wrf_temp@extent@ymin, wrf_temp@extent@ymax, by = res(wrf_temp)[2])
-lon <- seq(wrf_temp@extent@xmin, wrf_temp@extent@xmax, by = res(wrf_temp)[1])
+#lat <- seq(wrf_temp@extent@ymin, wrf_temp@extent@ymax, by = res(wrf_temp)[2])
+#lon <- seq(wrf_temp@extent@xmin, wrf_temp@extent@xmax, by = res(wrf_temp)[1])
 
-save(today, file="tmp/date.Rdata")
-save(list = ls(all = TRUE), file="tmp/data.Rdata")
+save(today, file="tmp/date.RData")
+save(today, dates, variavs, wrf_cft, wrf_prec, wrf_rh, wrf_sst, wrf_swflx, wrf_temp, wrf_wind, wrf_wind_gust, file="tmp/data.RData")
+#save.image(file="tmp/data.RData")
+
+cat("\n\n meteoForecast script completed \n\n")
