@@ -89,23 +89,23 @@ shinyUI(navbarPage(theme="http://bootswatch.com/spacelab/bootstrap.css", inverse
                    navbarMenu("More",
                               tabPanel("About",
                                        HTML(
-                                        '<p style="text-align:justify">
-                                       This forecast is based in Meteogalicia WRF simulations with 36 Km resolution.</p>
-                                       Variable Index: </p>
-                                       cft = cloud cover at low and mid levels; </p>
-                                       prec = Total accumulated rainfall between each model output; </p>
-                                       rh = Relative humidity at 2m; </p>
-                                       sst = sea surface temperature; </p>
-                                       temp = temperature at 2m; </p>
-                                       wind = wind at 10m; </p>
-                                       wind_gust = Wind Gust; </p>
-                                       '),
+                                         '<p style="text-align:justify">
+                                         This forecast is based in Meteogalicia WRF simulations with 36 Km resolution.</p>
+                                         Variable Index: </p>
+                                         cft = cloud cover at low and mid levels; </p>
+                                         prec = Total accumulated rainfall between each model output; </p>
+                                         rh = Relative humidity at 2m; </p>
+                                         sst = sea surface temperature; </p>
+                                         temp = temperature at 2m; </p>
+                                         wind = wind at 10m; </p>
+                                         wind_gust = Wind Gust; </p>
+                                         '),
                                        wellPanel(     #HTML(markdownToHTML(fragment.only=TRUE, text=c(
                                          "
                                          Autor: Ricardo Jorge Agrela Faria", a("GitHub", href="https://github.com/ricardo88faria")
                                        )
-                              )
-                   )
+                                       )
+                                       )
                    
                    )
 )

@@ -2,7 +2,7 @@
 shinyServer(function(input, output, session) { # added ps for another raster, porto santo
   #acm_defaults <- function(map, x, y) addCircleMarkers(map, x, y, radius=6, color="black", fillColor="orange", fillOpacity=1, opacity=1, weight=2, stroke=TRUE, layerId="Selected")
   
-
+  
   # if needed download data and raster auto downloader every 12h 
   #downloader <- reactive({                   # Responds to changes. But in here, only the invalidation triggers change.
   #  #invalidateLater(86400000/4, session)     # 4 x dia, 86400000 millisecs = 24 hours.
