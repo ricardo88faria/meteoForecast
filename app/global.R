@@ -26,7 +26,7 @@ library(ncdf4)
 
 
 
-load("tmp/date.RData")
+#load("tmp/date.RData")
 load("tmp/data.RData")
 
 # ciclo de condiçoes para correr ou nao meteoForecast.R em background
@@ -49,14 +49,15 @@ dates <- as.POSIXlt(strptime(as.character(dates), "d%Y.%m.%d.h%H"))
 hour <- as.POSIXlt(round(Sys.time(), units="hours"))
 dates <- as.character(dates)
 
-wrf_cft <- subset(wrf_cft, which(dates == as.character(hour)):length(dates))
-wrf_prec <- subset(wrf_prec, which(dates == as.character(hour)):length(dates))
-wrf_rh <- subset(wrf_rh, which(dates == as.character(hour)):length(dates))
-wrf_sst <- subset(wrf_sst, which(dates == as.character(hour)):length(dates))
-wrf_swflx <- subset(wrf_swflx, which(dates == as.character(hour)):length(dates))
-wrf_temp <- subset(wrf_temp, which(dates == as.character(hour)):length(dates))
-wrf_wind <- subset(wrf_wind, which(dates == as.character(hour)):length(dates))
-wrf_wind_gust <- subset(wrf_wind_gust, which(dates == as.character(hour)):length(dates))
+# change to a faster method: [[]]
+wrf_cft <- wrf_cft[[which(dates == as.character(hour)):length(dates)]]
+wrf_prec <- wrf_prec[[which(dates == as.character(hour)):length(dates)]]
+wrf_rh <- wrf_rh[[which(dates == as.character(hour)):length(dates)]]
+wrf_sst <- wrf_sst[[which(dates == as.character(hour)):length(dates)]]
+wrf_swflx <- wrf_swflx[[which(dates == as.character(hour)):length(dates)]]
+wrf_temp <- wrf_temp[[which(dates == as.character(hour)):length(dates)]]
+wrf_wind <- wrf_wind[[which(dates == as.character(hour)):length(dates)]]
+wrf_wind_gust <- wrf_wind_gust[[which(dates == as.character(hour)):length(dates)]]
 
 dates <- as.POSIXct(dates[which(dates == as.character(hour)):length(dates)])
 
@@ -67,7 +68,7 @@ lat_view <- 32.7375
 
 
 # raster operations
-rasterOptions(timer = T, progress = "text")
+#rasterOptions(timer = T, progress = "text")
 #x <- disaggregate(raster_IGPH, fact=c(2, 2), method='bilinear')   # bilinear interpolation to bigger resolution
 
 

@@ -34,7 +34,7 @@ today <- Sys.Date()
 #grepVar("Total_cloud_cover", "gfs", day = Sys.Date()-4, complete = F)
 
 ## box for netcdf download
-rast_limit <- mfExtent('meteogalicia', resolution = 36)
+#rast_limit <- mfExtent('meteogalicia', resolution = 36)
 
 #box <- data.frame(X = c(-31.550296, -3.864749), Y = c(27.332903, 43.644163))
 #box_lcc <- box
@@ -51,8 +51,8 @@ proj4string(st) <- '+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0'
 
 ## set working directory
 #set.tempdir(path = paste0(getwd(), "/tmp"))
-data_dir <- tempdir()
-remote = T
+#data_dir <- tempdir()
+#remote = T
 
 ## download netcdf to raster
 #wrf_lat <- getRaster("lat", day = today, box = st, frames = 1, resolution = 36, service = "meteogalicia", remote = remote, dataDir = data_dir)
@@ -86,13 +86,13 @@ pro_meteog_36 = "+proj=lcc +lat_1=43 +lat_2=43 +lat_0=24.2280006408691 +lon_0=-1
 for (i in variavs) {
   
   # download netcdf to raster
-  wrf_temporary <- getRaster(i, day = today, box = st, frames = 'complete', resolution = 36, service = "meteogalicia", remote = remote, dataDir = data_dir)
+  wrf_temporary <- getRaster(i, day = today, box = st, frames = 'complete', resolution = 36, service = "meteogalicia") #, remote = remote, dataDir = data_dir)
   cat("\n Downloaded: ", i)
   #wrf <- Sys.glob(paste0("tmp/", i, "*"))
   #wrf_temporary <-brick(wrf)
   
   # bilinear interpolation to bigger resolution
-  rasterOptions(timer = T, progress = "text")
+  #rasterOptions(timer = T, progress = "text")
   cat("\n raster options changed ")
   wrf_temporary <- disaggregate(wrf_temporary, fact=c(4, 4), method='bilinear')
   cat("\n disaggregated: ", i)
@@ -127,7 +127,7 @@ dates <- wrf_temp@data@names
 #lat <- seq(wrf_temp@extent@ymin, wrf_temp@extent@ymax, by = res(wrf_temp)[2])
 #lon <- seq(wrf_temp@extent@xmin, wrf_temp@extent@xmax, by = res(wrf_temp)[1])
 
-save(today, file="tmp/date.RData")
+#save(today, file="tmp/date.RData")
 save(today, dates, variavs, wrf_cft, wrf_prec, wrf_rh, wrf_sst, wrf_swflx, wrf_temp, wrf_wind, wrf_wind_gust, file="tmp/data.RData")
 #save.image(file="tmp/data.RData")
 

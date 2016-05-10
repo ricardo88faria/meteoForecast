@@ -18,45 +18,25 @@ shinyServer(function(input, output, session) { # added ps for another raster, po
   #  }
   #})
   
-  # latlon
-  #lat_input <- reactive({ 
-  #  input$userlat
-  #})
-  #lon_input <- reactive({ 
-  #  input$userlon
-  #})
-  # month
-  #month_input <- reactive({ 
-  #  months_name[input$date+1]
-  #})
   
-  # select raster by variable & transform date into dates vector index
-  variable <- reactive({ 
-    variavs[variavs==input$wrf_var] 
-  })
-  
-  ras_temp <- reactive({
-    if (variable() == "prec") {
-      ras <- wrf_prec
-    } else if (variable() == "rh") {
-      ras <- wrf_rh
-    } else if (variable() == "sst") {
-      ras <- wrf_sst
-    } else if (variable() == "temp") {
-      ras <- wrf_temp
-    } else if (variable() == "wind") {
-      ras <- wrf_wind
-    } else if (variable() == "wind_gust") {
-      ras <- wrf_wind_gust
-    } else if (variable() == "swflx") {
-      ras <- wrf_swflx
-    } else if (variable() == "cft") {
-      ras <- wrf_cft
+  ras <- reactive({
+    if (input$wrf_var == "prec") {
+      wrf_prec[[which(dates == input$date)]]
+    } else if (input$wrf_var == "rh") {
+      wrf_rh[[which(dates == input$date)]]
+    } else if (input$wrf_var== "sst") {
+      wrf_sst[[which(dates == input$date)]]
+    } else if (input$wrf_var == "temp") {
+      wrf_temp[[which(dates == input$date)]]
+    } else if (input$wrf_var == "wind") {
+      wrf_wind[[which(dates == input$date)]]
+    } else if (input$wrf_var == "wind_gust") {
+      wrf_wind_gust[[which(dates == input$date)]]
+    } else if (input$wrf_var == "swflx") {
+      wrf_swflx[[which(dates == input$date)]]
+    } else if (input$wrf_var == "cft") {
+      wrf_cft[[which(dates == input$date)]]
     }
-  })
-  
-  ras <- reactive({ 
-    subset(ras_temp(), which(dates == input$date))
   })
   
   # color paletes
@@ -65,81 +45,81 @@ shinyServer(function(input, output, session) { # added ps for another raster, po
   #colorBin(c('#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'), bins = c(0, 5, 8, 10, 12, 14, 18, 24, 26))
   
   ras_pal <- reactive({
-    if (variable() == "prec") {
+    if (input$wrf_var == "prec") {
       colorBin(palette = c("transparent", "springgreen2", "yellowgreen", "yellow1", "orange", "tomato1", "violetred4"), min_max_prec, bins = c(-Inf, min_max_prec, Inf), na.color="transparent", alpha = F)
-    } else if (variable() == "rh") {
+    } else if (input$wrf_var == "rh") {
       colorBin(palette = c("burlywood4", "burlywood", "darkseagreen", "palegreen2", "steelblue1", "royalblue3"), min_max_rh, bins = c(-Inf, min_max_rh, Inf), na.color="transparent", alpha = F)
-    } else if (variable() == "sst") {
+    } else if (input$wrf_var == "sst") {
       colorBin(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), min_max_sst, bins = c(-Inf, min_max_sst, Inf), na.color="transparent", alpha = F)
-    } else if (variable() == "temp") {
+    } else if (input$wrf_var == "temp") {
       colorBin(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), min_max_temp, bins = c(-Inf, min_max_temp, Inf), na.color="transparent", alpha = F)
-    } else if (variable() == "wind") {
+    } else if (input$wrf_var == "wind") {
       colorBin(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), min_max_wind, bins = c(-Inf, min_max_wind, Inf), na.color="transparent", alpha = F)
-    } else if (variable() == "wind_gust") {
+    } else if (input$wrf_var == "wind_gust") {
       colorBin(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), min_max_wind_gust, bins = c(-Inf, min_max_wind_gust, Inf), na.color="transparent", alpha = F)
-    } else if (variable() == "swflx") {
+    } else if (input$wrf_var == "swflx") {
       colorBin(palette = c("lightcyan", "yellow2", "orange", "tomato1", "violetred4", "violetred", "purple"), min_max_swflx, bins = c(-Inf, min_max_swflx, Inf), na.color="transparent", alpha = F)
-    } else if (variable() == "cft") {
+    } else if (input$wrf_var == "cft") {
       colorBin(palette = c("lightskyblue1", "snow1", "snow2", "snow3", "lightsteelblue3"," snow4"), min_max_cft, bins = c(-Inf, min_max_cft, Inf), na.color="transparent", alpha = F)
     }
   })
   
   ras_vals_legend <- reactive({ 
-    if (variable() == "prec") {
+    if (input$wrf_var == "prec") {
       seq(min(min_max_prec, na.rm = T), max(min_max_prec, na.rm = T), 2)
-    } else if (variable() == "rh") {
+    } else if (input$wrf_var == "rh") {
       seq(min(min_max_rh, na.rm = T), max(min_max_rh, na.rm = T), .1)
-    } else if (variable() == "sst") {
+    } else if (input$wrf_var == "sst") {
       seq(min(min_max_sst, na.rm = T), max(min_max_sst, na.rm = T), 5)
-    } else if (variable() == "temp") {
+    } else if (input$wrf_var == "temp") {
       seq(min(min_max_temp, na.rm = T), max(min_max_temp, na.rm = T), 5)
-    } else if (variable() == "wind") {
+    } else if (input$wrf_var == "wind") {
       seq(min(min_max_wind, na.rm = T), max(min_max_wind, na.rm = T), 2)
-    } else if (variable() == "wind_gust") {
+    } else if (input$wrf_var == "wind_gust") {
       seq(min(min_max_wind_gust, na.rm = T), max(min_max_wind_gust, na.rm = T), 2)
-    } else if (variable() == "swflx") {
+    } else if (input$wrf_var == "swflx") {
       seq(min(min_max_swflx, na.rm = T), max(min_max_swflx, na.rm = T), 200)
-    } else if (variable() == "cft") {
+    } else if (input$wrf_var == "cft") {
       seq(min(min_max_cft, na.rm = T), max(min_max_cft, na.rm = T), .1)
     }
   })
   
   ras_pal_legend <- reactive({ 
-    if (variable() == "prec") {
+    if (input$wrf_var == "prec") {
       colorNumeric(palette = c("transparent", "springgreen2", "yellowgreen", "yellow1", "orange", "tomato1", "violetred4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
-    } else if (variable() == "rh") {
+    } else if (input$wrf_var == "rh") {
       colorNumeric(palette = c("burlywood4", "burlywood", "darkseagreen", "palegreen2", "steelblue1", "royalblue3"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
-    } else if (variable() == "sst") {
+    } else if (input$wrf_var == "sst") {
       colorNumeric(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
-    } else if (variable() == "temp") {
+    } else if (input$wrf_var == "temp") {
       colorNumeric(palette = c("snow1", "snow3", "seagreen", "orange", "sienna1", "firebrick"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
-    } else if (variable() == "wind") {
+    } else if (input$wrf_var == "wind") {
       colorNumeric(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
-    } else if (variable() == "wind_gust") {
+    } else if (input$wrf_var == "wind_gust") {
       colorNumeric(palette = c("lightsteelblue1", "mediumaquamarine","orange",  "tomato1", "violetred4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
-    } else if (variable() == "swflx") {
+    } else if (input$wrf_var == "swflx") {
       colorNumeric(palette = c("lightcyan", "yellow2", "orange", "tomato1", "violetred4", "violetred", "purple"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
-    } else if (variable() == "cft") {
+    } else if (input$wrf_var == "cft") {
       colorNumeric(palette = c("lightskyblue1", "snow1", "snow2", "snow3", "lightsteelblue3"," snow4"), domain = ras_vals_legend(), na.color="transparent", alpha = F)
     }
   }) 
   
   ras_legend <- reactive({ 
-    if (variable() == "prec") {
+    if (input$wrf_var == "prec") {
       "Precipitation [kg/m^2]"
-    } else if (variable() == "rh") {
+    } else if (input$wrf_var == "rh") {
       "Relative Humidity [%]"
-    } else if (variable() == "sst") {
+    } else if (input$wrf_var == "sst") {
       "Sea Surface Temp. [ºC]"
-    } else if (variable() == "temp") {
+    } else if (input$wrf_var == "temp") {
       "Air Temperature at 2m [ºC]"
-    } else if (variable() == "wind") {
+    } else if (input$wrf_var == "wind") {
       "Wind velocity at 10m [m/s]"
-    } else if (variable() == "wind_gust") {
+    } else if (input$wrf_var == "wind_gust") {
       "Wind gust [m/s]"
-    } else if (variable() == "swflx") {
+    } else if (input$wrf_var == "swflx") {
       "surface downwelling shortwave flux  [w/m^2]"
-    } else if (variable() == "cft") {
+    } else if (input$wrf_var == "cft") {
       "cloud cover at low and mid levels [%]"
     }
   })

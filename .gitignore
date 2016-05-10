@@ -16,3 +16,4 @@ wgrib2
 .DS_Store
 log.out
 wrfout*
+.Rproj.user
