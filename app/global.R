@@ -29,10 +29,10 @@ library(ncdf4)
 #load("tmp/date.RData")
 load("tmp/data.RData")
 
-# ciclo de condiçoes para correr ou nao meteoForecast.R em background
+# ciclo de condiçoes para correr ou nao meteoForecast.R em background adicionei $value para testar scooping
 if (today != Sys.Date()) {
   #source("meteoForecast.R")
-  system("Rscript -e 'source(\"meteoForecast.R\")'", wait=FALSE)
+  system("Rscript -e 'source(\"meteoForecast.R\")$value'", wait=FALSE)
 }
 
 
