@@ -3,7 +3,7 @@
 # shinytheme() from shinythemes package must be avoided because it conflicts with bsModal in shinyBS.
 
 shinyUI(navbarPage(theme="http://bootswatch.com/spacelab/bootstrap.css", inverse=F,
-                   title=div(img(src="img/LREC.png", height = 30, width = 50),
+                   title=div(img(src="img/logo_obs_color_transparent_background.png", height = 30, width = 50),
                              #img(src="img/ReSun.jpg", height = 30, width = 70),
                              "Atlantic Forecast"
                    ),
